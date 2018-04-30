@@ -5,7 +5,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Date;
+import java.util.List;
+
 public class CustomerTest {
+    private static final double DOUBLE_DELTA = 1e-15;
 
     @Test //Test customer statement generation
     public void testApp(){
@@ -53,5 +57,45 @@ public class CustomerTest {
                 .openAccount(new Account(Account.SAVINGS));
         oscar.openAccount(new Account(Account.CHECKING));
         assertEquals(3, oscar.getNumberOfAccounts());
+    }
+
+    @Test
+    public void testTransfer() {
+        Account checkingAccount = new Account(Account.CHECKING);
+        Account savingsAccount = new Account(Account.SAVINGS);
+
+        Customer henry = new Customer("Henry").openAccount(checkingAccount).openAccount(savingsAccount);
+
+        checkingAccount.deposit(100.0);
+        savingsAccount.deposit(4000.0);
+
+        henry.transfer(savingsAccount, checkingAccount, 100.0);
+
+        assertEquals(savingsAccount.sumTransactions(), 3900.0, DOUBLE_DELTA);
+        assertEquals(checkingAccount.sumTransactions(), 200.0, DOUBLE_DELTA);
+    }
+
+    @Test
+    public void testTransactions() throws InterruptedException {
+        Account checkingAccount = new Account(Account.CHECKING);
+        
+        Date startTestDate = new Date();
+        
+        checkingAccount.deposit(1.0);
+        checkingAccount.deposit(1.0);
+
+        // TODO
+        Thread.sleep(2000);
+
+        Date cutoffDate = new Date();
+
+        Thread.sleep(2000);
+
+        checkingAccount.deposit(1.0);
+
+        List<Transaction> transactions = checkingAccount.returnTransactions(startTestDate, cutoffDate);
+
+        assertEquals(transactions.size(), 2);
+
     }
 }

@@ -6,6 +6,12 @@ import java.util.Date;
 public class DateProvider {
     private static DateProvider instance = null;
 
+    private static Calendar calendar;
+
+    private DateProvider() {
+        calendar = Calendar.getInstance();
+    }
+
     public static DateProvider getInstance() {
         if (instance == null)
             instance = new DateProvider();
@@ -13,6 +19,7 @@ public class DateProvider {
     }
 
     public Date now() {
-        return Calendar.getInstance().getTime();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        return calendar.getTime();
     }
 }
